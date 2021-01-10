@@ -7,6 +7,7 @@ import ru.job4j.dream.model.Post;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Singleton store
@@ -20,6 +21,7 @@ public final class Store {
     private final static Store INSTANCE = new Store();
     private final Map<Integer, Post> posts = new ConcurrentHashMap<>();
     private final Map<Integer, Candidate> candidates = new ConcurrentHashMap<>();
+    private static final AtomicInteger POST_ID = new AtomicInteger(4);
 
     private Store() {
         posts.put(1, new Post(1, "Junior Java Job"));
@@ -40,5 +42,10 @@ public final class Store {
 
     public Collection<Candidate> findAllCandidates() {
         return candidates.values();
+    }
+
+    public void save(Post post) {
+        post = post.setId(POST_ID.incrementAndGet());
+        posts.put(post.getId(), post);
     }
 }
