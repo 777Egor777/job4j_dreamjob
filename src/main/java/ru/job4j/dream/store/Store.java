@@ -1,5 +1,6 @@
 package ru.job4j.dream.store;
 
+import net.jcip.annotations.ThreadSafe;
 import ru.job4j.dream.model.Candidate;
 import ru.job4j.dream.model.Post;
 
@@ -14,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version 1.0
  * @since 09.01.2021
  */
+@ThreadSafe
 public final class Store {
     private final static Store INSTANCE = new Store();
     private final Map<Integer, Post> posts = new ConcurrentHashMap<>();

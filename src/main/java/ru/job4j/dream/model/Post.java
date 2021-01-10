@@ -1,5 +1,7 @@
 package ru.job4j.dream.model;
 
+import net.jcip.annotations.Immutable;
+
 import java.util.Objects;
 
 /**
@@ -7,6 +9,7 @@ import java.util.Objects;
  * @version 1.0
  * @since 09.01.2021
  */
+@Immutable
 public final class Post {
     private final int id;
     private final String name;
