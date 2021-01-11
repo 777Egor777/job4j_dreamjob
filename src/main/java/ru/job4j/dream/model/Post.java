@@ -10,33 +10,24 @@ import java.util.Objects;
  * @since 09.01.2021
  */
 @Immutable
-public final class Post {
-    private final int id;
-    private final String name;
+public final class Post extends Item {
 
     public Post(int id, String name) {
-        this.id = id;
-        this.name = name;
+        super(id, name);
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
+    @Override
     public Post setId(int id) {
-        return new Post(id, name);
+        return of(super.setId(id));
     }
 
+    @Override
     public Post setName(String name) {
-        return new Post(id, name);
+        return of(super.setName(name));
     }
 
-    public static Post of(Post post) {
-        return new Post(post.id, post.name);
+    public static Post of(Item item) {
+        return new Post(item.getId(), item.getName());
     }
 
     @Override
@@ -44,11 +35,20 @@ public final class Post {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Post post = (Post) o;
-        return id == post.id && Objects.equals(name, post.name);
+        return getId() == post.getId() && Objects.equals(getName(), post.getName());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(getId(), getName());
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "Post{id=%s, name=%s}",
+                getId(),
+                getName()
+        );
     }
 }
