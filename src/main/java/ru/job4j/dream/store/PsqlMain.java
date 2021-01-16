@@ -8,7 +8,7 @@ import ru.job4j.dream.model.Post;
  * @since 11.01.2021
  */
 public class PsqlMain {
-    private final static Store STORE = PsqlStore.instOf();
+    private final static PostStore STORE = PsqlPostStore.instOf();
 
     private static void init() {
         STORE.save(new Post(0, "Java Trainee Job"));
@@ -31,13 +31,13 @@ public class PsqlMain {
     }
 
     public static void findAllPosts() {
-        for (Post post: STORE.findAllPosts()) {
+        for (Post post: STORE.findAll()) {
             System.out.println(post.getId() + " " + post.getName());
         }
     }
 
     public static void findPostById() {
         int id = 16;//Java Middle Job
-        System.out.println(STORE.findPostById(id));
+        System.out.println(STORE.findById(id));
     }
 }

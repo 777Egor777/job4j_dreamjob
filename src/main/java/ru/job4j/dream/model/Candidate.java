@@ -10,23 +10,33 @@ import java.util.Objects;
  * @since 09.01.2021
  */
 @Immutable
-public final class Candidate extends Item {
+public final class Candidate {
+    private final int id;
+    private final String name;
+
     public Candidate(int id, String name) {
-        super(id, name);
+        this.id = id;
+        this.name = name;
     }
 
-    @Override
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     public Candidate setId(int id) {
-        return of(super.setId(id));
+        return new Candidate(id, name);
     }
 
-    @Override
     public Candidate setName(String name) {
-        return of(super.setName(name));
+        return new Candidate(id, name);
     }
 
-    public static Candidate of(Item c) {
-        return new Candidate(c.getId(), c.getName());
+    public static Candidate of(Candidate c) {
+        return new Candidate(c.id, c.name);
     }
 
     @Override
@@ -34,11 +44,19 @@ public final class Candidate extends Item {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Candidate candidate = (Candidate) o;
-        return getId() == candidate.getId() && Objects.equals(getName(), candidate.getName());
+        return id == candidate.id && Objects.equals(name, candidate.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName());
+        return Objects.hash(id, name);
+    }
+
+    @Override
+    public String toString() {
+        return "Candidate{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

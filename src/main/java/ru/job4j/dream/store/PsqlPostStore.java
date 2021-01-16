@@ -2,7 +2,6 @@ package ru.job4j.dream.store;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import ru.job4j.dream.model.Candidate;
-import ru.job4j.dream.model.Item;
 import ru.job4j.dream.model.Post;
 
 import java.io.IOException;
@@ -10,7 +9,6 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,16 +20,17 @@ import java.util.stream.Collectors;
  * @version 1.0
  * @since 11.01.2021
  */
-public final class PsqlStore implements Store {
+public final class PsqlPostStore implements PostStore {
     private final static int MIN_IDLE_COUNT = 5;
     private final static int MAX_IDLE_COUNT = 10;
     private final static int MAX_OPEN_PS_COUNT = 100;
+    private final static String TABLE_NAME = "posts";
     private final BasicDataSource pool = new BasicDataSource();
 
-    private PsqlStore() {
+    private PsqlPostStore() {
         Properties cfg = new Properties();
         try (InputStream in =
-                     PsqlStore.class.getClassLoader().getResourceAsStream("dp.properties")) {
+                     PsqlPostStore.class.getClassLoader().getResourceAsStream("dp.properties")) {
             cfg.load(in);
         } catch (IOException e) {
             throw new IllegalStateException(e);
@@ -51,92 +50,68 @@ public final class PsqlStore implements Store {
     }
 
     private static final class Lazy {
-        private static final Store INSTANCE = new PsqlStore();
+        private static final PostStore INSTANCE = new PsqlPostStore();
     }
 
-    public static Store instOf() {
+    public static PostStore instOf() {
         return Lazy.INSTANCE;
     }
 
-    private Collection<Item> findAllByTableName(String tableName) {
-        List<Item> items = new LinkedList<>();
+    @Override
+    public Collection<Post> findAll() {
+        List<Post> posts = new LinkedList<>();
         try (Connection cn = pool.getConnection();
-             PreparedStatement ps = cn.prepareStatement("select * from " + tableName);
+             PreparedStatement ps = cn.prepareStatement("select * from " + TABLE_NAME);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                items.add(new Item(rs.getInt("id"), rs.getString("name")));
+                posts.add(new Post(rs.getInt("id"), rs.getString("name")));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return items;
-    }
-
-    @Override
-    public Collection<Post> findAllPosts() {
-        return findAllByTableName("post")
-                .stream()
-                .map(Post::of)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Collection<Candidate> findAllCandidates() {
-        return findAllByTableName("candidate")
-                .stream()
-                .map(Candidate::of)
-                .collect(Collectors.toList());
+        return posts;
     }
 
     @Override
     public Post save(Post post) {
-        return Post.of(save(post, "post"));
-    }
-
-    @Override
-    public Candidate save(Candidate candidate) {
-        return Candidate.of(save(candidate, "candidate"));
-    }
-
-    private Item save(Item item, String table) {
-        Item result = item;
-        if (item.getId() == 0) {
-            result = create(item, table);
+        Post result = post;
+        if (post.getId() == 0) {
+            result = create(post);
         } else {
-            update(item, table);
+            update(post);
         }
         return result;
     }
 
-    private Item create(Item item, String table) {
+    private Post create(Post post) {
         String query = String.format(
                 "insert into %s(name) values(?)",
-                table
+                TABLE_NAME
         );
         try (Connection cn = pool.getConnection();
              PreparedStatement ps = cn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, item.getName());
+            ps.setString(1, post.getName());
             ps.execute();
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
-                    item = item.setId(rs.getInt(1));
+                    post = post.setId(rs.getInt(1));
                 }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return item;
+        return post;
     }
 
-    private void update(Item item, String table) {
+    private void update(Post post) {
         String query = String.format(
                 "update %s set name=? where id=?",
-                table
+                TABLE_NAME
         );
         try (Connection cn = pool.getConnection();
              PreparedStatement ps = cn.prepareStatement(query)) {
-            ps.setString(1, item.getName());
-            ps.setInt(2, item.getId());
+            ps.setString(1, post.getName());
+            ps.setInt(2, post.getId());
             ps.executeUpdate();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -144,41 +119,11 @@ public final class PsqlStore implements Store {
     }
 
     @Override
-    public Post findPostById(int id) {
-        Item item = findItemById(id, "post");
-        return Post.of(item);
-    }
-
-    @Override
-    public Candidate findCandidateById(int id) {
-        Item item = findItemById(id, "candidate");
-        return Candidate.of(item);
-    }
-
-    private void clearTable(String table) {
-        String query = String.format(
-                "delete from %s",
-                table
-        );
-        try (Connection cn = pool.getConnection();
-             PreparedStatement ps = cn.prepareStatement(query)) {
-            ps.execute();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    @Override
-    public void clear() {
-        clearTable("post");
-        clearTable("candidate");
-    }
-
-    private Item findItemById(int id, String table) {
+    public Post findById(int id) {
         String name = "";
         String query = String.format(
                 "select name from %s where id=?",
-                table
+                TABLE_NAME
         );
         try (Connection cn = pool.getConnection();
              PreparedStatement ps = cn.prepareStatement(query)) {
@@ -191,6 +136,34 @@ public final class PsqlStore implements Store {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        return new Item(id, name);
+        return new Post(id, name);
+    }
+
+    @Override
+    public void clear() {
+        String deleteQuery = String.format(
+                "drop table if exists %s;",
+                TABLE_NAME
+        );
+        String createQuery = String.format(
+                "create table if not exists %s( id serial primary key, name text );",
+                TABLE_NAME
+        );
+        try (Connection cn = pool.getConnection()) {
+            try (PreparedStatement psDelete = cn.prepareStatement(deleteQuery)) {
+                psDelete.execute();
+            }
+            Thread.sleep(100);
+            try (PreparedStatement psCreate = cn.prepareStatement(createQuery)) {
+                psCreate.execute();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        PsqlPostStore.instOf().clear();
+        PsqlCandidateStore.instOf().clear();
     }
 }

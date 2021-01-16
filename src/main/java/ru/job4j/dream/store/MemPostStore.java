@@ -17,34 +17,24 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @since 09.01.2021
  */
 @ThreadSafe
-public final class MemStore implements Store {
-    private final static MemStore INSTANCE = new MemStore();
+public final class MemPostStore implements PostStore {
+    private final static MemPostStore INSTANCE = new MemPostStore();
     private final Map<Integer, Post> posts = new ConcurrentHashMap<>();
-    private final Map<Integer, Candidate> candidates = new ConcurrentHashMap<>();
     private static final AtomicInteger POST_ID = new AtomicInteger(4);
-    private static final AtomicInteger CANDIDATE_ID = new AtomicInteger(11);
 
-    private MemStore() {
+    private MemPostStore() {
         posts.put(1, new Post(1, "Junior Java Job"));
         posts.put(2, new Post(2, "Middle Java Job"));
         posts.put(3, new Post(3, "Senior Java Job"));
-        candidates.put(1, new Candidate(1, "Junior Java"));
-        candidates.put(2, new Candidate(2, "Middle Java"));
-        candidates.put(3, new Candidate(3, "Senior Java"));
     }
 
-    public static Store instOf() {
+    public static PostStore instOf() {
         return INSTANCE;
     }
 
     @Override
-    public Collection<Post> findAllPosts() {
+    public Collection<Post> findAll() {
         return posts.values();
-    }
-
-    @Override
-    public Collection<Candidate> findAllCandidates() {
-        return candidates.values();
     }
 
     @Override
@@ -57,22 +47,8 @@ public final class MemStore implements Store {
     }
 
     @Override
-    public Candidate save(Candidate candidate) {
-        if (candidate.getId() == 0) {
-            candidate = candidate.setId(CANDIDATE_ID.incrementAndGet());
-        }
-        candidates.put(candidate.getId(), candidate);
-        return candidate;
-    }
-
-    @Override
-    public Post findPostById(int id) {
+    public Post findById(int id) {
         return posts.get(id);
-    }
-
-    @Override
-    public Candidate findCandidateById(int id) {
-        return candidates.get(id);
     }
 
     @Override
