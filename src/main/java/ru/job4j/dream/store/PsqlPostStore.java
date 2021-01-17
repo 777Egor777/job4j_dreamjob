@@ -3,9 +3,9 @@ package ru.job4j.dream.store;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.job4j.dream.model.Candidate;
 import ru.job4j.dream.model.Post;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * @author Geraskin Egor
@@ -33,9 +32,8 @@ public final class PsqlPostStore implements PostStore {
 
     private PsqlPostStore() {
         Properties cfg = new Properties();
-        try (InputStream in =
-                     PsqlPostStore.class.getClassLoader().getResourceAsStream("dp.properties")) {
-            cfg.load(in);
+        try (FileReader reader = new FileReader("dp.properties")) {
+            cfg.load(reader);
         } catch (IOException e) {
             LOG.error("Exception when loading db.properties cfg", e);
         }
