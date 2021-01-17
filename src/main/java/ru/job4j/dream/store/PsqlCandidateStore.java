@@ -1,6 +1,8 @@
 package ru.job4j.dream.store;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.job4j.dream.model.Candidate;
 import ru.job4j.dream.model.Post;
 
@@ -20,6 +22,7 @@ import java.util.Properties;
  * @since 16.01.2021
  */
 public class PsqlCandidateStore implements CandidateStore {
+    private static final Logger LOG = LoggerFactory.getLogger(PsqlPostStore.class.getName());
     private final static int MIN_IDLE_COUNT = 5;
     private final static int MAX_IDLE_COUNT = 10;
     private final static int MAX_OPEN_PS_COUNT = 100;
@@ -32,12 +35,12 @@ public class PsqlCandidateStore implements CandidateStore {
                      PsqlPostStore.class.getClassLoader().getResourceAsStream("dp.properties")) {
             cfg.load(in);
         } catch (IOException e) {
-            throw new IllegalStateException(e);
+            LOG.error("Exception when loading db.properties cfg", e);
         }
         try {
             Class.forName(cfg.getProperty("jdbc.driver"));
         } catch (ClassNotFoundException e) {
-            throw new IllegalStateException(e);
+            LOG.error("Exception when registering JDBC driver", e);
         }
         pool.setDriverClassName(cfg.getProperty("jdbc.driver"));
         pool.setUrl(cfg.getProperty("jdbc.url"));
@@ -66,7 +69,7 @@ public class PsqlCandidateStore implements CandidateStore {
                 candidates.add(new Candidate(rs.getInt("id"), rs.getString("name")));
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOG.error("Exception when extracting all items from candidate db", ex);
         }
         return candidates;
     }
@@ -97,7 +100,7 @@ public class PsqlCandidateStore implements CandidateStore {
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOG.error("Exception when creating new item in candidate db", ex);
         }
         return candidate;
     }
@@ -113,7 +116,7 @@ public class PsqlCandidateStore implements CandidateStore {
             ps.setInt(2, candidate.getId());
             ps.executeUpdate();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOG.error("Exception when updating item in candidate db", ex);
         }
     }
 
@@ -133,7 +136,7 @@ public class PsqlCandidateStore implements CandidateStore {
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOG.error("Exception when searching item in candidate db", ex);
         }
         return new Candidate(id, name);
     }
@@ -157,7 +160,7 @@ public class PsqlCandidateStore implements CandidateStore {
                 psCreate.execute();
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOG.error("Exception when clearing candidate db", ex);
         }
     }
 }

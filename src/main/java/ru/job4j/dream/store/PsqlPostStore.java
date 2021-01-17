@@ -1,6 +1,8 @@
 package ru.job4j.dream.store;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.job4j.dream.model.Candidate;
 import ru.job4j.dream.model.Post;
 
@@ -21,11 +23,13 @@ import java.util.stream.Collectors;
  * @since 11.01.2021
  */
 public final class PsqlPostStore implements PostStore {
+    private static final Logger LOG = LoggerFactory.getLogger(PsqlPostStore.class.getName());
     private final static int MIN_IDLE_COUNT = 5;
     private final static int MAX_IDLE_COUNT = 10;
     private final static int MAX_OPEN_PS_COUNT = 100;
     private final static String TABLE_NAME = "posts";
     private final BasicDataSource pool = new BasicDataSource();
+
 
     private PsqlPostStore() {
         Properties cfg = new Properties();
@@ -33,12 +37,12 @@ public final class PsqlPostStore implements PostStore {
                      PsqlPostStore.class.getClassLoader().getResourceAsStream("dp.properties")) {
             cfg.load(in);
         } catch (IOException e) {
-            throw new IllegalStateException(e);
+            LOG.error("Exception when loading db.properties cfg", e);
         }
         try {
             Class.forName(cfg.getProperty("jdbc.driver"));
         } catch (ClassNotFoundException e) {
-            throw new IllegalStateException(e);
+            LOG.error("Exception when registering JDBC driver", e);
         }
         pool.setDriverClassName(cfg.getProperty("jdbc.driver"));
         pool.setUrl(cfg.getProperty("jdbc.url"));
@@ -67,7 +71,7 @@ public final class PsqlPostStore implements PostStore {
                 posts.add(new Post(rs.getInt("id"), rs.getString("name")));
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOG.error("Exception when extracting all items from post db", ex);
         }
         return posts;
     }
@@ -98,7 +102,7 @@ public final class PsqlPostStore implements PostStore {
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOG.error("Exception when creating new item in post db", ex);
         }
         return post;
     }
@@ -114,7 +118,7 @@ public final class PsqlPostStore implements PostStore {
             ps.setInt(2, post.getId());
             ps.executeUpdate();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOG.error("Exception when updating item in post db", ex);
         }
     }
 
@@ -134,7 +138,7 @@ public final class PsqlPostStore implements PostStore {
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOG.error("Exception when searching item in post db", ex);
         }
         return new Post(id, name);
     }
@@ -158,12 +162,7 @@ public final class PsqlPostStore implements PostStore {
                 psCreate.execute();
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOG.error("Exception when clearing post db", ex);
         }
-    }
-
-    public static void main(String[] args) {
-        PsqlPostStore.instOf().clear();
-        PsqlCandidateStore.instOf().clear();
     }
 }
