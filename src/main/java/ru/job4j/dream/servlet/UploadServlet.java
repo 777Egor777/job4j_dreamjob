@@ -1,4 +1,4 @@
-package ru.job4j.servlets;
+package ru.job4j.dream.servlet;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;

@@ -1,4 +1,4 @@
-package ru.job4j.servlets;
+package ru.job4j.dream.servlet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
