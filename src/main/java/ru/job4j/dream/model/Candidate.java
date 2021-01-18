@@ -13,10 +13,18 @@ import java.util.Objects;
 public final class Candidate {
     private final int id;
     private final String name;
+    private final int photoId;
 
     public Candidate(int id, String name) {
         this.id = id;
         this.name = name;
+        photoId = 1;
+    }
+
+    public Candidate(int id, String name, int photo_id) {
+        this.id = id;
+        this.name = name;
+        this.photoId = photo_id;
     }
 
     public int getId() {
@@ -27,16 +35,24 @@ public final class Candidate {
         return name;
     }
 
+    public int getPhotoId() {
+        return photoId;
+    }
+
     public Candidate setId(int id) {
-        return new Candidate(id, name);
+        return new Candidate(id, name, photoId);
     }
 
     public Candidate setName(String name) {
-        return new Candidate(id, name);
+        return new Candidate(id, name, photoId);
+    }
+
+    public Candidate setPhotoId(int photoId) {
+        return new Candidate(id, name, photoId);
     }
 
     public static Candidate of(Candidate c) {
-        return new Candidate(c.id, c.name);
+        return new Candidate(c.id, c.name, c.photoId);
     }
 
     @Override
@@ -44,12 +60,13 @@ public final class Candidate {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Candidate candidate = (Candidate) o;
-        return id == candidate.id && Objects.equals(name, candidate.name);
+        return id == candidate.id && Objects.equals(name, candidate.name)
+                && photoId == candidate.photoId;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(id, name, photoId);
     }
 
     @Override

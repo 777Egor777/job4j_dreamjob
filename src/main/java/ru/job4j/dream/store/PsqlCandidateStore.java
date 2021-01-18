@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,6 +49,17 @@ public class PsqlCandidateStore implements CandidateStore {
         pool.setMinIdle(MIN_IDLE_COUNT);
         pool.setMaxIdle(MAX_IDLE_COUNT);
         pool.setMaxOpenPreparedStatements(MAX_OPEN_PS_COUNT);
+        createTable();
+    }
+
+    private void createTable() {
+        String query = "create table if not exists candidate(id serial primary key, name text, photo_id int references photo(id));";
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps = cn.prepareStatement(query)) {
+            ps.execute();
+        } catch (Exception ex) {
+            LOG.error("Exception when creating table candidate", ex);
+        }
     }
 
     private final static class Holder {
@@ -65,7 +77,8 @@ public class PsqlCandidateStore implements CandidateStore {
              PreparedStatement ps = cn.prepareStatement("select * from " + TABLE_NAME);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                candidates.add(new Candidate(rs.getInt("id"), rs.getString("name")));
+                candidates.add(new Candidate(rs.getInt("id"), rs.getString("name"),
+                                             rs.getInt("photo_id")));
             }
         } catch (Exception ex) {
             LOG.error("Exception when extracting all items from candidate db", ex);
@@ -86,12 +99,13 @@ public class PsqlCandidateStore implements CandidateStore {
 
     private Candidate create(Candidate candidate) {
         String query = String.format(
-                "insert into %s(name) values(?)",
+                "insert into %s(name, photo_id) values(?,?)",
                 TABLE_NAME
         );
         try (Connection cn = pool.getConnection();
              PreparedStatement ps = cn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, candidate.getName());
+            ps.setInt(2, candidate.getPhotoId());
             ps.execute();
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
@@ -106,13 +120,14 @@ public class PsqlCandidateStore implements CandidateStore {
 
     private void update(Candidate candidate) {
         String query = String.format(
-                "update %s set name=? where id=?",
+                "update %s set name=?, photo_id=? where id=?",
                 TABLE_NAME
         );
         try (Connection cn = pool.getConnection();
              PreparedStatement ps = cn.prepareStatement(query)) {
             ps.setString(1, candidate.getName());
-            ps.setInt(2, candidate.getId());
+            ps.setInt(2, candidate.getPhotoId());
+            ps.setInt(3, candidate.getId());
             ps.executeUpdate();
         } catch (Exception ex) {
             LOG.error("Exception when updating item in candidate db", ex);
@@ -122,8 +137,9 @@ public class PsqlCandidateStore implements CandidateStore {
     @Override
     public Candidate findById(int id) {
         String name = "";
+        int photoId = -1;
         String query = String.format(
-                "select name from %s where id=?",
+                "select name, photo_id from %s where id=?",
                 TABLE_NAME
         );
         try (Connection cn = pool.getConnection();
@@ -132,12 +148,13 @@ public class PsqlCandidateStore implements CandidateStore {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     name = rs.getString(1);
+                    photoId = rs.getInt(2);
                 }
             }
         } catch (Exception ex) {
             LOG.error("Exception when searching item in candidate db", ex);
         }
-        return new Candidate(id, name);
+        return new Candidate(id, name, photoId);
     }
 
     @Override
@@ -147,7 +164,7 @@ public class PsqlCandidateStore implements CandidateStore {
                 TABLE_NAME
         );
         String createQuery = String.format(
-                "create table if not exists %s( id serial primary key, name text );",
+                "create table if not exists %s( id serial primary key, name text, photo_id int references photo(id) );",
                 TABLE_NAME
         );
         try (Connection cn = pool.getConnection()) {
@@ -161,5 +178,10 @@ public class PsqlCandidateStore implements CandidateStore {
         } catch (Exception ex) {
             LOG.error("Exception when clearing candidate db", ex);
         }
+    }
+
+    public static void main(String[] args) {
+        Candidate c = PsqlCandidateStore.instOf().findById(1);
+        System.out.println(c);
     }
 }

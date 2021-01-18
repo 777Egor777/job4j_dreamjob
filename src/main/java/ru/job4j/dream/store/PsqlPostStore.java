@@ -49,6 +49,17 @@ public final class PsqlPostStore implements PostStore {
         pool.setMinIdle(MIN_IDLE_COUNT);
         pool.setMaxIdle(MAX_IDLE_COUNT);
         pool.setMaxOpenPreparedStatements(MAX_OPEN_PS_COUNT);
+        createTable();
+    }
+
+    private void createTable() {
+        String query = "create table if not exists post(id serial primary key, name text);";
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps = cn.prepareStatement(query)) {
+            ps.execute();
+        } catch (Exception ex) {
+            LOG.error("Exception when creating table candidate", ex);
+        }
     }
 
     private static final class Lazy {
