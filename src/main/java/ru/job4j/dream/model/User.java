@@ -30,6 +30,13 @@ public final class User {
         this.password = password;
     }
 
+    public User(String name, String email, String password) {
+        this.id = -1;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
+
     public int getId() {
         return id;
     }
@@ -47,7 +54,11 @@ public final class User {
     }
 
     public User setId(int id) {
-        return new User(id, name, email, password);
+        User result = this;
+        if (this.id == -1) {
+            result = new User(id, name, email, password);
+        }
+        return result;
     }
 
     public User setName(String name) {
