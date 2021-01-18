@@ -15,27 +15,26 @@ import java.io.IOException;
  * @version 1.0
  * @since 18.01.2021
  */
-public class AuthServlet extends HttpServlet {
+public class RegServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("auth.jsp").forward(req, resp);
+        req.getRequestDispatcher("reg.jsp").forward(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String name = req.getParameter("name");
         String email = req.getParameter("email");
         String password = req.getParameter("password");
-        User user = PsqlUserStore.instOf().findByEmail(email);
 
-        if (user.getId() == -1) {
-            req.getRequestDispatcher("auth_no_such_email.jsp").forward(req, resp);
-        } else
-        if (user.getPassword().equals(password)) {
+        if (PsqlUserStore.instOf().findByEmail(email).getId() != -1) {
+            req.getRequestDispatcher("reg_email_already_exists.jsp").forward(req, resp);
+        } else {
+            User user = new User(name, email, password);
+            user = user.setId(PsqlUserStore.instOf().save(user));
             HttpSession session = req.getSession();
             session.setAttribute("user", user);
             resp.sendRedirect(req.getContextPath() + "/posts.do");
-        } else {
-            req.getRequestDispatcher("auth_incorrect_password.jsp").forward(req, resp);
         }
     }
 }

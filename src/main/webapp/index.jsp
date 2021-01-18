@@ -39,12 +39,15 @@
             <li class="nav-item">
                 <% Object objUser = request.getAttribute("user"); %>
                 <% if (objUser == null) { %>
-                    <a class="nav-link" href="<%=request.getContextPath()%>/auth.jsp">Войти в систему</a>
+                    <a class="nav-link" href="<%=request.getContextPath()%>/auth.do">Войти в систему</a>
                 <% } else { %>
-                    <a class="nav-link" href="<%=request.getContextPath()%>/auth.jsp">
+                    <a class="nav-link" href="<%=request.getContextPath()%>/auth.do">
                         <%=((User) objUser).getName()%> | Выйти
                     </a>
                 <% } %>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="<%=request.getContextPath()%>/reg.do">Регистрация</a>
             </li>
         </ul>
     </div>

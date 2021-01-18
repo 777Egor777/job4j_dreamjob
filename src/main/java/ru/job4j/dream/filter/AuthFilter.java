@@ -4,6 +4,8 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author Egor Geraskin(yegeraskin13@gmail.com)
@@ -11,6 +13,28 @@ import java.io.IOException;
  * @since 18.01.2021
  */
 public class AuthFilter implements Filter {
+
+    private final List<String> acceptablePageEndings;
+
+    public AuthFilter() {
+        acceptablePageEndings = List.of(
+                "reg.do",
+                "auth.do"
+        );
+    }
+
+    private boolean isAcceptableUri(String uri) {
+        boolean result = false;
+        for (String ending : acceptablePageEndings) {
+            if (uri.endsWith(ending)) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
+
     @Override
     public void init(FilterConfig filterConfig) {
 
@@ -21,8 +45,12 @@ public class AuthFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) servletRequest;
         HttpServletResponse resp = (HttpServletResponse) servletResponse;
         String uri = req.getRequestURI();
-        if (uri.endsWith("auth.do")) {
+        System.out.println("!!" + uri + "!!");
+        System.out.println(uri.endsWith("reg.do"));
+        if (isAcceptableUri(uri)) {
+            System.out.println("!!!");
             filterChain.doFilter(servletRequest, servletResponse);
+            System.out.println("!!!!");
         } else if (req.getSession().getAttribute("user") == null) {
             resp.sendRedirect(req.getContextPath() + "/auth.do");
         } else {
