@@ -13,5 +13,6 @@ public interface PostStore {
     Collection<Post> findAll();
     Post save(Post post);
     Post findById(int id);
+    Post findByName(String name);
     void clear();
 }

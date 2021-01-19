@@ -18,9 +18,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @ThreadSafe
 public final class MemPostStore implements PostStore {
-    private final static MemPostStore INSTANCE = new MemPostStore();
     private final Map<Integer, Post> posts = new ConcurrentHashMap<>();
     private static final AtomicInteger POST_ID = new AtomicInteger(4);
+
+    private static final class Holder {
+        private final static PostStore INSTANCE = new MemPostStore();
+    }
 
     private MemPostStore() {
         posts.put(1, new Post(1, "Junior Java Job"));
@@ -29,7 +32,7 @@ public final class MemPostStore implements PostStore {
     }
 
     public static PostStore instOf() {
-        return INSTANCE;
+        return Holder.INSTANCE;
     }
 
     @Override
@@ -40,7 +43,7 @@ public final class MemPostStore implements PostStore {
     @Override
     public Post save(Post post) {
         if (post.getId() == 0) {
-            post = post.setId(POST_ID.incrementAndGet());
+            post = post.setId(POST_ID.getAndIncrement());
         }
         posts.put(post.getId(), post);
         return post;
@@ -49,6 +52,18 @@ public final class MemPostStore implements PostStore {
     @Override
     public Post findById(int id) {
         return posts.get(id);
+    }
+
+    @Override
+    public Post findByName(String name) {
+        Post result = null;
+        for (Post post : posts.values()) {
+            if (post.getName().equals(name)) {
+                result = post;
+                break;
+            }
+        }
+        return  result;
     }
 
     @Override

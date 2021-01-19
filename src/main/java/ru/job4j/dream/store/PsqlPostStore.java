@@ -153,6 +153,11 @@ public final class PsqlPostStore implements PostStore {
     }
 
     @Override
+    public Post findByName(String name) {
+        return new Post(0, "");
+    }
+
+    @Override
     public void clear() {
         String deleteQuery = String.format(
                 "drop table if exists %s;",
