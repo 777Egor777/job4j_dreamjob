@@ -16,12 +16,19 @@
         $.ajax({
             type: 'GET',
             url: 'http://localhost:8080/dreamjob/greet',
-            data: 'name=' + email,
-            dataType: 'text'
-        }).done(function(data) {
-            //alert(data);
-            $('#cont div:first').before('<h1>' + email + '</h1>');
+            contentType: 'application/json',
+            data: {name: email},
+            dataType: 'json',
+            /*
+            success: function (response) {
+                alert(response.answer)
+            }
+            */
+        }).done(function(response) {
+            alert(response.answer);
+            //$('#cont div:first').before('<h1>' + email + '</h1>');
         }).fail(function(err) {alert(err);});
+
     }
 </script>
 
