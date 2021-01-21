@@ -53,7 +53,7 @@ public class PsqlCandidateStore implements CandidateStore {
     }
 
     private void createTable() {
-        String query = "create table if not exists candidate(id serial primary key, name text, photo_id int references photo(id));";
+        String query = "create table if not exists candidate(id serial primary key, name text, photo_id int references photo(id), city_id int);";
         try (Connection cn = pool.getConnection();
              PreparedStatement ps = cn.prepareStatement(query)) {
             ps.execute();
@@ -78,7 +78,8 @@ public class PsqlCandidateStore implements CandidateStore {
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 candidates.add(new Candidate(rs.getInt("id"), rs.getString("name"),
-                                             rs.getInt("photo_id")));
+                                             rs.getInt("photo_id"),
+                                             rs.getInt("city_id")));
             }
         } catch (Exception ex) {
             LOG.error("Exception when extracting all items from candidate db", ex);
@@ -99,13 +100,14 @@ public class PsqlCandidateStore implements CandidateStore {
 
     private Candidate create(Candidate candidate) {
         String query = String.format(
-                "insert into %s(name, photo_id) values(?,?)",
+                "insert into %s(name, photo_id, city_id) values(?,?,?)",
                 TABLE_NAME
         );
         try (Connection cn = pool.getConnection();
              PreparedStatement ps = cn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, candidate.getName());
             ps.setInt(2, candidate.getPhotoId());
+            ps.setInt(3, candidate.getCityId());
             ps.execute();
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
@@ -120,14 +122,15 @@ public class PsqlCandidateStore implements CandidateStore {
 
     private void update(Candidate candidate) {
         String query = String.format(
-                "update %s set name=?, photo_id=? where id=?",
+                "update %s set name=?, photo_id=?, city_id=? where id=?",
                 TABLE_NAME
         );
         try (Connection cn = pool.getConnection();
              PreparedStatement ps = cn.prepareStatement(query)) {
             ps.setString(1, candidate.getName());
             ps.setInt(2, candidate.getPhotoId());
-            ps.setInt(3, candidate.getId());
+            ps.setInt(3, candidate.getCityId());
+            ps.setInt(4, candidate.getId());
             ps.executeUpdate();
         } catch (Exception ex) {
             LOG.error("Exception when updating item in candidate db", ex);
@@ -138,8 +141,9 @@ public class PsqlCandidateStore implements CandidateStore {
     public Candidate findById(int id) {
         String name = "";
         int photoId = -1;
+        int city_id = 0;
         String query = String.format(
-                "select name, photo_id from %s where id=?",
+                "select name, photo_id, city_id from %s where id=?",
                 TABLE_NAME
         );
         try (Connection cn = pool.getConnection();
@@ -149,12 +153,13 @@ public class PsqlCandidateStore implements CandidateStore {
                 if (rs.next()) {
                     name = rs.getString(1);
                     photoId = rs.getInt(2);
+                    city_id = rs.getInt(3);
                 }
             }
         } catch (Exception ex) {
             LOG.error("Exception when searching item in candidate db", ex);
         }
-        return new Candidate(id, name, photoId);
+        return new Candidate(id, name, photoId, city_id);
     }
 
     @Override
@@ -164,7 +169,7 @@ public class PsqlCandidateStore implements CandidateStore {
                 TABLE_NAME
         );
         String createQuery = String.format(
-                "create table if not exists %s( id serial primary key, name text, photo_id int references photo(id) );",
+                "create table if not exists %s( id serial primary key, name text, photo_id int references photo(id), city_id int);",
                 TABLE_NAME
         );
         try (Connection cn = pool.getConnection()) {

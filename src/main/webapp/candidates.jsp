@@ -1,6 +1,7 @@
 <%@ page import="ru.job4j.dream.model.Candidate" %>
 <%@ page import="ru.job4j.dream.store.PsqlCandidateStore" %>
 <%@ page import="ru.job4j.dream.store.PsqlPhotoStore" %>
+<%@ page import="ru.job4j.dream.store.MemCityStore" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <!doctype html>
@@ -58,6 +59,7 @@
                     <thead>
                     <tr>
                         <th scope="col">Имя</th>
+                        <th scope="col">Город</th>
                         <th scope="col">Фото</th>
                     </tr>
                     </thead>
@@ -69,6 +71,9 @@
                                     <i class="fa fa-edit mr-3"></i>
                                 </a>
                                 <%=candidate.getName()%>
+                            </td>
+                            <td>
+                                <%=MemCityStore.instOf().getNameById(candidate.getCityId())%>
                             </td>
                             <td>
                                 <% if (candidate.getPhotoId() > 1) { %>

@@ -18,9 +18,9 @@ public class MemCandidateStore implements CandidateStore {
     private static final AtomicInteger CANDIDATE_ID = new AtomicInteger(11);
 
     private MemCandidateStore() {
-        candidates.put(1, new Candidate(1, "Junior Java"));
-        candidates.put(2, new Candidate(2, "Middle Java"));
-        candidates.put(3, new Candidate(3, "Senior Java"));
+        candidates.put(1, new Candidate(1, "Junior Java", 0));
+        candidates.put(2, new Candidate(2, "Middle Java", 0));
+        candidates.put(3, new Candidate(3, "Senior Java", 0));
     }
 
     public static CandidateStore instOf() {
