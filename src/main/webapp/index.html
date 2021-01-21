@@ -10,15 +10,28 @@
     <script>
         function validate() {
             let result = true;
+            let arr = [];
             if ($('#name').val() == '') {
-                alert('Name field is empty');
+                arr.push('Name');
                 result = false;
-            } else if ($('#surname').val() == '') {
-                alert('Surname field is empty');
+            }
+            if ($('#surname').val() == '') {
+                arr.push('Surname');
                 result = false;
-            } else if ($('#desc').val() == '') {
-                alert('Description is empty');
+            }
+            if ($('#desc').val() == '') {
+                arr.push('Description');
                 result = false;
+            }
+            if (arr.length === 1) {
+                alert(arr[0] + ' field is empty');
+            } else if (arr.length > 1) {
+                let msg = arr[0];
+                for (var i = 1; i < arr.length; ++i) {
+                    msg += ', ' + arr[i];
+                }
+                msg += ' fields is empty';
+                alert(msg);
             }
             return result;
         }
