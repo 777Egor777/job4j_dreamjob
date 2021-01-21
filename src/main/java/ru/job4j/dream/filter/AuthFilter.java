@@ -13,28 +13,6 @@ import java.util.List;
  * @since 18.01.2021
  */
 public class AuthFilter implements Filter {
-
-    private final List<String> acceptablePageEndings;
-
-    public AuthFilter() {
-        acceptablePageEndings = List.of(
-                "reg.do",
-                "auth.do"
-        );
-    }
-
-    private boolean isAcceptableUri(String uri) {
-        boolean result = false;
-        for (String ending : acceptablePageEndings) {
-            if (uri.endsWith(ending)) {
-                result = true;
-                break;
-            }
-        }
-        return result;
-    }
-
-
     @Override
     public void init(FilterConfig filterConfig) {
 
@@ -45,12 +23,8 @@ public class AuthFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) servletRequest;
         HttpServletResponse resp = (HttpServletResponse) servletResponse;
         String uri = req.getRequestURI();
-        System.out.println("!!" + uri + "!!");
-        System.out.println(uri.endsWith("reg.do"));
-        if (isAcceptableUri(uri)) {
-            System.out.println("!!!");
+        if (uri.endsWith("auth.do") || uri.endsWith("reg.do")) {
             filterChain.doFilter(servletRequest, servletResponse);
-            System.out.println("!!!!");
         } else if (req.getSession().getAttribute("user") == null) {
             resp.sendRedirect(req.getContextPath() + "/auth.do");
         } else {

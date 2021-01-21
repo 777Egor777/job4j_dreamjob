@@ -28,6 +28,16 @@
         post = PsqlPostStore.instOf().findById(Integer.parseInt(id));
     }
 %>
+<script>
+    function validate() {
+        let result = true;
+        if ($('#name').val() == '') {
+            alert('Name field is empty');
+            result = false;
+        }
+        return result;
+    }
+</script>
 <div class="container pt-3">
     <div class="row">
         <div class="card" style="width: 100%">
@@ -42,9 +52,9 @@
                 <form action="<%=request.getContextPath()%>/posts.do?id=<%=post.getId()%>" method="post">
                     <div class="form-group">
                         <label>Имя</label>
-                        <input type="text" class="form-control" name="name" value="<%=post.getName()%>">
+                        <input type="text" class="form-control" name="name" value="<%=post.getName()%>" id="name">
                     </div>
-                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                    <button type="submit" class="btn btn-primary" onclick="return validate();">Сохранить</button>
                 </form>
             </div>
         </div>

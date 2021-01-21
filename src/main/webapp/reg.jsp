@@ -19,7 +19,22 @@
     <title>Работа мечта. Регистрация.</title>
 </head>
 <body>
-
+<script>
+    function validate() {
+        let result = true;
+        if ($('#name').val() == '') {
+            alert('Name field is empty');
+            result = false;
+        } else if ($('#email').val() == '') {
+            alert('Email field is empty');
+            result = false;
+        } else if ($('#pwd').val() == '') {
+            alert('Password field is empty');
+            result = false;
+        }
+        return result;
+    }
+</script>
 <div class="container pt-3">
     <div class="row">
         <div class="card" style="width: 100%">
@@ -30,17 +45,17 @@
                 <form action="<%=request.getContextPath()%>/reg.do" method="post">
                     <div class="form-group">
                         <label>Name</label>
-                        <input type="text" class="form-control" name="name">
+                        <input type="text" class="form-control" name="name" id="name">
                     </div>
                     <div class="form-group">
                         <label>Email</label>
-                        <input type="text" class="form-control" name="email">
+                        <input type="text" class="form-control" name="email" id="email">
                     </div>
                     <div class="form-group">
                         <label>Password</label>
-                        <input type="text" class="form-control" name="password">
+                        <input type="text" class="form-control" name="password" id="pwd">
                     </div>
-                    <button type="submit" class="btn btn-primary">Enter</button>
+                    <button type="submit" class="btn btn-primary" onclick="return validate();">Enter</button>
                 </form>
             </div>
         </div>
