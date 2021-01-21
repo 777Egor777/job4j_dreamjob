@@ -1,5 +1,7 @@
 package ru.job4j.dream.servlet;
 
+import org.json.simple.*;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,9 +22,10 @@ public class GreetingServlet extends HttpServlet {
         String name = req.getParameter("name");
         PrintWriter writer = new PrintWriter(resp.getOutputStream());
 
-        writer.print("{" + System.lineSeparator()
-                    + "\"answer\": \"Nice to meet you, " + name + "\""
-                    + System.lineSeparator() + "}");
+        JSONObject obj = new JSONObject();
+        obj.put("answer", "Nice to meet you, " + name);
+
+        writer.print(obj.toJSONString());
 
         //writer.println("Nice to meet you, " + name);
         writer.flush();
