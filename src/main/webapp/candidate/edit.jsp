@@ -37,7 +37,7 @@
                 .fail(function(err) {
                     alert(err);
                 });
-        })
+        }   )
     </script>
 
     <title>Работа мечты</title>
