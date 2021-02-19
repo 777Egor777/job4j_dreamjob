@@ -5,6 +5,8 @@ import net.jcip.annotations.Immutable;
 import java.util.Objects;
 
 /**
+ * Модель данных "Кандидат"
+ *
  * @author Geraskin Egor
  * @version 1.0
  * @since 09.01.2021
@@ -15,19 +17,22 @@ public final class Candidate {
     private final String name;
     private final int photoId;
     private final int cityId;
+    private final long created;
 
-    public Candidate(int id, String name, int cityId) {
+    public Candidate(int id, String name, int cityId, long created) {
         this.id = id;
         this.name = name;
         photoId = 1;
         this.cityId = cityId;
+        this.created = created;
     }
 
-    public Candidate(int id, String name, int photo_id, int cityId) {
+    public Candidate(int id, String name, int photo_id, int cityId, long created) {
         this.id = id;
         this.name = name;
         this.photoId = photo_id;
         this.cityId = cityId;
+        this.created = created;
     }
 
     public int getId() {
@@ -46,24 +51,32 @@ public final class Candidate {
         return cityId;
     }
 
+    public long getCreated() {
+        return created;
+    }
+
     public Candidate setId(int id) {
-        return new Candidate(id, name, photoId, cityId);
+        return new Candidate(id, name, photoId, cityId, created);
     }
 
     public Candidate setName(String name) {
-        return new Candidate(id, name, photoId, cityId);
+        return new Candidate(id, name, photoId, cityId, created);
     }
 
     public Candidate setPhotoId(int photoId) {
-        return new Candidate(id, name, photoId, cityId);
+        return new Candidate(id, name, photoId, cityId, created);
     }
 
     public Candidate setCityId(int cityId) {
-        return new Candidate(id, name, photoId, cityId);
+        return new Candidate(id, name, photoId, cityId, created);
+    }
+
+    public Candidate setCreated(long created) {
+        return new Candidate(id, name, photoId, cityId, created);
     }
 
     public static Candidate of(Candidate c) {
-        return new Candidate(c.id, c.name, c.photoId, c.cityId);
+        return new Candidate(c.id, c.name, c.photoId, c.cityId, c.created);
     }
 
     @Override

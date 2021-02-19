@@ -1,5 +1,9 @@
 <%@ page import="ru.job4j.dream.model.User" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="ru.job4j.dream.model.Candidate" %>
+<%@ page import="ru.job4j.dream.store.PsqlCandidateStore" %>
+<%@ page import="ru.job4j.dream.store.MemCityStore" %>
+<%@ page import="ru.job4j.dream.store.PsqlPhotoStore" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <!doctype html>
 <html lang="en">
@@ -54,13 +58,61 @@
     <div class="row">
         <div class="card" style="width: 100%">
             <div class="card-header">Сегодняшние вакансии</div>
-            <div class="card-body"></div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Названия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <c:forEach items="${posts}" var="post">
+                        <tr>
+                            <td>
+                                <c:out value="${post.name}"/>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     <div class="row pt-3">
         <div class="card" style="width: 100%">
             <div class="card-header">Сегодняшние кандидаты</div>
-            <div class="card-body"></div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Имя</th>
+                        <th scope="col">Город</th>
+                        <th scope="col">Фото</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% for(Candidate candidate: PsqlCandidateStore.instOf().findAllByToday()) { %>
+                    <tr>
+                        <td>
+                            <%=candidate.getName()%>
+                        </td>
+                        <td>
+                            <%=MemCityStore.instOf().getNameById(candidate.getCityId())%>
+                        </td>
+                        <td>
+                            <% if (candidate.getPhotoId() >= 1) { %>
+                            <%
+                                int photoId = candidate.getPhotoId();
+                                String photoName = PsqlPhotoStore.instOf().get(photoId);
+                            %>
+                            <img src="<%=request.getContextPath()%>/download?name=<%=photoName%>" width="100px" height="100px" />
+                            <% } %>
+                        </td>
+                    </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

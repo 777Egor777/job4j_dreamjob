@@ -8,6 +8,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * Фильтр авторизации пользователей.
+ * Пользователь не сможет управлять
+ * функционалом сайта не будучи
+ * авторизованным.
+ *
  * @author Egor Geraskin(yegeraskin13@gmail.com)
  * @version 1.0
  * @since 18.01.2021

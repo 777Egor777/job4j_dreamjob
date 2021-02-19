@@ -5,6 +5,8 @@ import net.jcip.annotations.Immutable;
 import java.util.Objects;
 
 /**
+ * Модель данных "Вакансия"
+ *
  * @author Geraskin Egor
  * @version 1.0
  * @since 09.01.2021
@@ -13,10 +15,18 @@ import java.util.Objects;
 public final class Post {
     private final int id;
     private final String name;
+    private final long created;
 
     public Post(int id, String name) {
         this.id = id;
         this.name = name;
+        this.created = System.currentTimeMillis();
+    }
+
+    public Post(int id, String name, long created) {
+        this.id = id;
+        this.name = name;
+        this.created = created;
     }
 
     public int getId() {
@@ -27,16 +37,20 @@ public final class Post {
         return name;
     }
 
+    public long getCreated() {
+        return created;
+    }
+
     public Post setId(int id) {
-        return new Post(id, name);
+        return new Post(id, name, created);
     }
 
     public Post setName(String name) {
-        return new Post(id, name);
+        return new Post(id, name, created);
     }
 
     public static Post of(Post post) {
-        return new Post(post.id, post.name);
+        return new Post(post.id, post.name, post.created);
     }
 
     @Override

@@ -12,11 +12,26 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
+ * Сервлет выполняет одну задачу -
+ * передаёт список всех городов,
+ * преобразованный в формат JSON
+ * в качестве ответа на запрос.
+ *
  * @author Egor Geraskin(yegeraskin13@gmail.com)
  * @version 1.0
  * @since 21.01.2021
  */
 public class CityServlet extends HttpServlet {
+    /**
+     * Передача списка всех
+     * городов в формате
+     * JSON в качестве ответа.
+     *
+     * @param req - объект запроса(HttpServletRequest)
+     * @param resp - объект ответа(HttpServletResponse)
+     *               В его OutputStream и записывается
+     *               список городов в формате JSON.
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setCharacterEncoding("UTF-8");

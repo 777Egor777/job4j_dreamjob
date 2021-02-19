@@ -10,18 +10,58 @@ import java.sql.*;
 import java.util.Properties;
 
 /**
+ * Хранилище данных для фотографий
+ * кандидатов,
+ * использующее базу данных
+ * PostgreSQL для хранения.
+ *
+ * Класс является Синглтоном - во время
+ * работы приложения будет создан и будет
+ * использоваться всего один
+ * его объект.
+ *
+ * Синглтон инициализируется лениво,
+ * используется шаблон "Holder"
+ *
  * @author Egor Geraskin(yegeraskin13@gmail.com)
  * @version 1.0
  * @since 17.01.2021
  */
 public class PsqlPhotoStore implements PhotoStore {
-    private static final Logger LOG = LoggerFactory.getLogger(PsqlPostStore.class.getName());
+    /**
+     * Объект для логгирования.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(PsqlPhotoStore.class.getName());
+
+    /**
+     * Настройки пула соединений
+     * с БД.
+     */
     private final static int MIN_IDLE_COUNT = 5;
     private final static int MAX_IDLE_COUNT = 10;
     private final static int MAX_OPEN_PS_COUNT = 100;
+
+    /**
+     * Имя таблицы в БД,
+     * в которой хранятся данные
+     * по каждому кандидату.
+     */
     private final static String TABLE_NAME = "photo";
+
+    /**
+     * Пул соединений с Базой Данных.
+     */
     private final BasicDataSource pool = new BasicDataSource();
 
+    /**
+     * В классе только один приватный
+     * конструктор - так как это
+     * синглтон.
+     *
+     * В конструкторе инициализируется
+     * и настраивается пул соединений
+     * с БД.
+     */
     private PsqlPhotoStore() {
         Properties cfg = new Properties();
         try (FileReader reader = new FileReader("dp.properties")) {
@@ -44,6 +84,9 @@ public class PsqlPhotoStore implements PhotoStore {
         createTable();
     }
 
+    /**
+     * Создание таблицы в БД.
+     */
     private void createTable() {
         String query = "create table if not exists photo(id serial primary key, name text);";
         try (Connection cn = pool.getConnection();
@@ -54,14 +97,35 @@ public class PsqlPhotoStore implements PhotoStore {
         }
     }
 
+    /**
+     * Класс для ленивой загрузки
+     * объекта внешнего класса-
+     * синглтона.
+     *
+     * Применяется шаблон "Holder".
+     */
     private static final class Holder {
         private final static PhotoStore INSTANCE = new PsqlPhotoStore();
     }
 
+    /**
+     * Метод возвращает
+     * объект синглтона
+     * @return - объект синглтона
+     */
     public static PhotoStore instOf() {
         return Holder.INSTANCE;
     }
 
+    /**
+     * Добавить фото с
+     * данным именем.
+     *
+     * @param name - имя фото.
+     * @return сгенерированный
+     *         хранилищем id
+     *         для фото.
+     */
     @Override
     public int add(String name) {
         int result = -1;
@@ -83,6 +147,13 @@ public class PsqlPhotoStore implements PhotoStore {
         return result;
     }
 
+    /**
+     * Удалить фото с данным id
+     * из хранилища.
+     *
+     * @param id - идентификатор фото,
+     *             которое надо удалить.
+     */
     @Override
     public void delete(int id) {
         String query = "delete from photo where id=?";
@@ -97,6 +168,20 @@ public class PsqlPhotoStore implements PhotoStore {
         }
     }
 
+    /**
+     * Обновиться запись с
+     * данным id в хранилище,
+     * изменить название
+     * фотографии, соответствующее
+     * данному id.
+     *
+     * @param id - идентификатор записи,
+     *             название фото в которой
+     *             надо поменять.
+     * @param newName - новое имя фотографии
+     *                  у записи с
+     *                  идентификатором id.
+     */
     @Override
     public void update(int id, String newName) {
         String query = "update photo set name=? where id=?";
@@ -112,6 +197,13 @@ public class PsqlPhotoStore implements PhotoStore {
         }
     }
 
+    /**
+     * Вернуть название фотографии
+     * с данным id.
+     * @param id - идентификатор требуемой
+     *             фотографии
+     * @return название фотографии
+     */
     @Override
     public String get(int id) {
         String result = "";
@@ -132,6 +224,9 @@ public class PsqlPhotoStore implements PhotoStore {
         return result;
     }
 
+    /**
+     * Очистить хранилище.
+     */
     @Override
     public void clear() {
         String deleteQuery = String.format(
@@ -145,8 +240,5 @@ public class PsqlPhotoStore implements PhotoStore {
         } catch (Exception ex) {
             LOG.error("Exception when clearing candidate db", ex);
         }
-    }
-
-    public static void main(String[] args) {
     }
 }

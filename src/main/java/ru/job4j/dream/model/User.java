@@ -5,6 +5,8 @@ import net.jcip.annotations.Immutable;
 import java.util.Objects;
 
 /**
+ * Модель данных "Пользователь"
+ *
  * @author Egor Geraskin(yegeraskin13@gmail.com)
  * @version 1.0
  * @since 18.01.2021

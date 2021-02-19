@@ -21,11 +21,24 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * Сервлет выполняет 2 задачи:
+ * 1) (doGet) Перенаправляет
+ *    запрос на JSP, на которой
+ *    располагается форма для
+ *    загрузки файла
+ * 2) (doPost) Загрузить файл -
+ *    фотографию кандидата
+ *
  * @author Egor Geraskin(yegeraskin13@gmail.com)
  * @version 1.0
  * @since 17.01.2021
  */
 public class UploadServlet extends HttpServlet {
+    /**
+     * Редирект на JSP
+     * @param req - объект запроса(HttpServletRequest)
+     * @param resp - объект ответа(HttpServletResponse).
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String candidate_id = req.getParameter("candidate_id");
@@ -33,6 +46,20 @@ public class UploadServlet extends HttpServlet {
         dispatcher.forward(req, resp);
     }
 
+    /**
+     * Загрузка файла - фотографии
+     * кандидата.
+     * Обновление кандидата в хранилище
+     *  - изменение его поля
+     *  {@code photo_id}
+     *
+     * Для загрузки файла
+     * используется библиотека
+     * Apache Commons Fileupload
+     *
+     * @param req - объект запроса(HttpServletRequest)
+     * @param resp - объект ответа(HttpServletResponse).
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         DiskFileItemFactory factory = new DiskFileItemFactory();

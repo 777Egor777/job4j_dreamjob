@@ -6,6 +6,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
+ * Cross-Origin-Resource-Sharing фильтр.
+ * Нужен, чтобы приложение работало
+ * в среде междоменных запросов.
+ *
  * @author Egor Geraskin(yegeraskin13@gmail.com)
  * @version 1.0
  * @since 21.01.2021

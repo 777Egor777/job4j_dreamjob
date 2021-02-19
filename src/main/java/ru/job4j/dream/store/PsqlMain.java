@@ -25,9 +25,9 @@ public class PsqlMain {
 
     public static void main(String[] args) {
         //clear();
-        //init();
+        init();
         //findAllPosts();
-        findPostById();
+//        findPostById();
     }
 
     public static void findAllPosts() {
