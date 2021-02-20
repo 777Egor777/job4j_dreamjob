@@ -95,13 +95,14 @@ CRUD-MVC приложение на сервлетах и JSP, реализующ
     ![](screenshots/reg2.png) ![](screenshots/reg3.png)
 
 2. Авторизация.
-    1.1 Попробуем авторизоваться с несуществующим e-mail
+
+    2.1 Попробуем авторизоваться с несуществующим e-mail
     ![](screenshots/auth1.png)
     ![](screenshots/auth2.png)
-    1.2 Попробуем авторизоваться с неверным паролем
+    2.2 Попробуем авторизоваться с неверным паролем
     ![](screenshots/auth5.png)
     ![](screenshots/auth6.png)
-    1.3 Авторизуемся с верными данными
+    2.3 Авторизуемся с верными данными
     ![](screenshots/auth3.png)
     ![](screenshots/auth4.png)
 3. Вакансии.
@@ -109,8 +110,11 @@ CRUD-MVC приложение на сервлетах и JSP, реализующ
     3.1 Как видим, уже добавлено несколько вакансий
     ![](screenshots/post1.png)
     3.2 Отредактируем первую
+    
     ![](screenshots/post2.png)
+    
     ![](screenshots/post3.png)
+    
     ![](screenshots/post4.png)
     
     3.3 Добавим новую вакансию.
