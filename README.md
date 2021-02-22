@@ -119,10 +119,54 @@ CRUD-MVC приложение на сервлетах и JSP, реализующ
     
     3.3 Добавим новую вакансию.
     ![](screenshots/addpost1.png)
+    
     ![](screenshots/addpost2.png)
+    
     ![](screenshots/addpost3.png)
     
 4. Кандидаты     
+    4.1 Добавим кандидата
+    
+    ![](screenshots/addcand1.png)
+    
+    ![](screenshots/addcand2.png)
+    
+    ![](screenshots/addcand3.png)
+    
+    4.2 Загрузим ему фото
+    
+    ![](screenshots/uploadphoto1.png)
+    
+    ![](screenshots/uploadphoto2.png)
+    
+    ![](screenshots/uploadphoto3.png)
+    
+    ![](screenshots/uploadphoto4.png)
+    
+    ![](screenshots/uploadphoto5.png)
+    
+    ![](screenshots/uploadphoto6.png)
+    
+    4.3 Отредактируем кандидата:
+    
+    ![](screenshots/changecand1.png)
+    
+    ![](screenshots/changecand2.png)
+    
+    4.4 Скачаем фото кандидата:
+    
+    ![](screenshots/downloadphoto1.png)
+    
+    ![](screenshots/downloadphoto2.png)
+    
+    4.5 Добавим ещё кандидатов с фото
+    
+    ![](screenshots/addcand4.png)
+
+5. На главной странице вывелись все сегодняшние
+   добавленные кандидаты.
+   
+   ![](screenshots/main.png)
     
 ## JavaDoc
 TODO

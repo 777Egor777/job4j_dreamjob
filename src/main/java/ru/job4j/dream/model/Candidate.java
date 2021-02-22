@@ -19,12 +19,12 @@ public final class Candidate {
     private final int cityId;
     private final long created;
 
-    public Candidate(int id, String name, int cityId, long created) {
+    public Candidate(int id, String name, int photoId, int cityId) {
         this.id = id;
         this.name = name;
-        photoId = 1;
+        this.photoId = photoId;
         this.cityId = cityId;
-        this.created = created;
+        this.created = System.currentTimeMillis();
     }
 
     public Candidate(int id, String name, int photo_id, int cityId, long created) {

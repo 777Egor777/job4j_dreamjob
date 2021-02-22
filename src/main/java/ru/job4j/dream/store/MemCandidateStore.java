@@ -51,9 +51,9 @@ public class MemCandidateStore implements CandidateStore {
      * так как это Синглтон.
      */
     private MemCandidateStore() {
-        candidates.put(1, new Candidate(1, "Junior Java", 0, System.currentTimeMillis()));
-        candidates.put(2, new Candidate(2, "Middle Java", 0, System.currentTimeMillis()));
-        candidates.put(3, new Candidate(3, "Senior Java", 0, System.currentTimeMillis()));
+        candidates.put(1, new Candidate(1, "Junior Java",1, 0));
+        candidates.put(2, new Candidate(2, "Middle Java",1, 0));
+        candidates.put(3, new Candidate(3, "Senior Java",1, 0));
     }
 
     /**
