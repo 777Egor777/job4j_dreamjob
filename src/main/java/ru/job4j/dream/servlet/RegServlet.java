@@ -11,7 +11,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
- * Сервлет для страницы авторизации
+ * Сервлет для страницы регистрации
  * пользователей.
  *
  * Поддерживает валидацию, если
